@@ -1,0 +1,5 @@
+fig	gene	val1	val2	val3	note	thing
+feature1	f11	1	0.1	100.1		thing 1
+feature2	f22	2	0.2	200.2	Y	thing 2
+feature3	f33	3	0.3	300.3	N	the cat
+feature4	f44	4	0.4	40.4		the boy
