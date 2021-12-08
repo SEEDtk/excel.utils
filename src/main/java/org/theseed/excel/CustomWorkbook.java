@@ -220,15 +220,19 @@ public class CustomWorkbook implements AutoCloseable {
         this.intStyle = this.workbook.createCellStyle();
         this.intStyle.setDataFormat(intFmt);
         this.intStyle.setAlignment(HorizontalAlignment.RIGHT);
+        this.intStyle.setVerticalAlignment(VerticalAlignment.TOP);
         this.fracStyle = this.workbook.createCellStyle();
         this.fracStyle.setDataFormat(fracFmt);
         this.fracStyle.setAlignment(HorizontalAlignment.RIGHT);
+        this.fracStyle.setVerticalAlignment(VerticalAlignment.TOP);
         this.setupNumberStyles();
         // Create the text styles
         this.textStyle = this.workbook.createCellStyle();
         this.textStyle.setAlignment(HorizontalAlignment.LEFT);
+        this.textStyle.setVerticalAlignment(VerticalAlignment.TOP);
         this.flagStyle = this.workbook.createCellStyle();
         this.flagStyle.setAlignment(HorizontalAlignment.CENTER);
+        this.flagStyle.setVerticalAlignment(VerticalAlignment.TOP);
         this.wrapStyle = this.workbook.createCellStyle();
         this.wrapStyle.setAlignment(HorizontalAlignment.LEFT);
         this.wrapStyle.setVerticalAlignment(VerticalAlignment.TOP);
@@ -238,6 +242,7 @@ public class CustomWorkbook implements AutoCloseable {
         hlinkfont.setColor(IndexedColors.INDIGO.getIndex());
         this.linkStyle = this.workbook.createCellStyle();
         this.linkStyle.setAlignment(HorizontalAlignment.LEFT);
+        this.linkStyle.setVerticalAlignment(VerticalAlignment.TOP);
         this.linkStyle.setFont(hlinkfont);
         this.lwrapStyle = this.workbook.createCellStyle();
         this.lwrapStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -450,7 +455,7 @@ public class CustomWorkbook implements AutoCloseable {
             int c = cell.getColumnIndex();
             // This describes where the comment appears.  It appears under the cell.  The first four 0s are
             // within-cell displacements.  We cover 5 columns and 2 rows.
-            XSSFClientAnchor anchor = this.drawHelper.createAnchor(0, 0, 0, 0, c, r+1, c+4, r+2);
+            XSSFClientAnchor anchor = this.drawHelper.createAnchor(0, 0, 0, 0, c, r+1, c+5, r+3);
             XSSFComment commentObject = this.drawHelper.createCellComment(anchor);
             commentObject.setAddress(r, c);
             commentObject.setString(comment);
@@ -461,10 +466,12 @@ public class CustomWorkbook implements AutoCloseable {
     /**
      * Finalize the current sheet.
      */
-    private void closeSheet() {
+    public void closeSheet() {
         // Currently, we just need to convert it to a table if this is table mode.
         if (this.tableMode)
             this.makeTable();
+        // Insure we don't close it again.
+        this.sheet = null;
     }
 
     /**
@@ -485,7 +492,7 @@ public class CustomWorkbook implements AutoCloseable {
         // Set up the table name and ID.
         String fixedName = TableName.fix(this.sheet.getSheetName());
         TableName tableIdentifier = this.tableMap.createTable(fixedName);
-        cttable.setDisplayName(fixedName);
+        cttable.setDisplayName("table_" + fixedName);
         cttable.setName(tableIdentifier.getId());
         cttable.setId(tableIdentifier.getNum());
         // Turn on auto-filter.
@@ -620,6 +627,14 @@ public class CustomWorkbook implements AutoCloseable {
             if (cell != null && cell.getCellType() == CellType.STRING)
                 cell.setCellStyle(this.flagStyle);
         }
+    }
+
+    /**
+     * Auto-size all the columns in the current sheet.
+     */
+    public void autoSizeColumns() {
+        for (int c = 0; c < this.maxCols; c++)
+            this.autoSizeColumn(c);
     }
 
 }
