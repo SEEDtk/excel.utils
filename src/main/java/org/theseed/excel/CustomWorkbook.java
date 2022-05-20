@@ -366,6 +366,17 @@ public class CustomWorkbook implements AutoCloseable {
      */
     public void storeCell(double value, Num style) {
         XSSFCell cell = this.addCell(CellType.NUMERIC);
+        this.storeDouble(cell, value, style);
+    }
+
+    /**
+     * Store a floating-point value in a cell.
+     *
+     * @param cell		target cell
+     * @param value		value to store
+     * @param style		style of number
+     */
+    private void storeDouble(XSSFCell cell, double value, Num style) {
         cell.setCellValue(value);
         switch (style) {
         case NORMAL :
@@ -375,6 +386,47 @@ public class CustomWorkbook implements AutoCloseable {
             cell.setCellStyle(this.fracStyle);
             break;
         }
+    }
+
+    /**
+     * Store a floating-point value in a random cell.  Random-access stores should be done after
+     * the sequential storing that is the norm.
+     *
+     * @param r			target row index
+     * @param c			target column index
+     * @param value		value to store
+     * @param style		style of number
+     *
+     */
+    public void storeCell(int r, int c, double value, Num style) {
+        XSSFCell cell = this.findCell(r, c);
+        this.storeDouble(cell, value, style);
+    }
+
+    /**
+     * @return the identified spreadsheet cell
+     *
+     * @param r		target row index
+     * @param c		target column index
+     */
+    private XSSFCell findCell(int r, int c) {
+        var row = this.sheet.getRow(r);
+        if (row == null)
+            row = this.sheet.createRow(r);
+        return row.createCell(c);
+    }
+
+    /**
+     * Store a string value in a random cell.  Random stores should be done after the sequential storing
+     * that is the norm.
+     *
+     * @param r			target row index
+     * @param c			target column index
+     * @param value		value to store
+     */
+    public void storeCell(int r, int c, String value) {
+        var cell = this.findCell(r, c);
+        cell.setCellValue(value);
     }
 
     /**
