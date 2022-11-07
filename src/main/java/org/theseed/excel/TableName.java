@@ -41,11 +41,6 @@ public class TableName extends MagicObject {
         this.tableNum = num;
     }
 
-    @Override
-    public String normalize() {
-        return this.getName();
-    }
-
     /**
      * Convert a sheet name string to an acceptable format for a table name.  This involves
      * (1) removing the word "sheet" at the end, (2) converting everything to lower case, and (3) turning
@@ -71,6 +66,11 @@ public class TableName extends MagicObject {
      */
     public long getNum() {
         return this.tableNum;
+    }
+
+    @Override
+    protected String normalize(String name) {
+        return name;
     }
 
 }
