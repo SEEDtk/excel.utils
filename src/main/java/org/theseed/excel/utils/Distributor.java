@@ -73,13 +73,25 @@ public class Distributor {
      * @param value		value to record
      */
     public void addValue(String name, double value) {
+        this.addValues(name, value);
+    }
+
+    /**
+     * Add an array of values to a series.
+     *
+     * @param name		name of the series
+     * @param values	values to record
+     */
+    public void addValues(String name, double... values) {
         // We count on Java's habit of initializing all ints to zero.
         int[] buckets = this.bucketMap.computeIfAbsent(name, x -> new int[this.nBuckets]);
-        int idx = (int) ((value - this.minimum) / this.bucketWidth);
-        // Catch the maximum if it happens.
-        if (idx >= this.nBuckets) idx = this.nBuckets - 1;
-        // Count the value.
-        buckets[idx]++;
+        for (double value : values) {
+            int idx = (int) ((value - this.minimum) / this.bucketWidth);
+            // Catch the maximum if it happens.
+            if (idx >= this.nBuckets) idx = this.nBuckets - 1;
+            // Count the value.
+            buckets[idx]++;
+        }
     }
 
     /**
@@ -129,4 +141,5 @@ public class Distributor {
             }
         }
     }
+
 }
