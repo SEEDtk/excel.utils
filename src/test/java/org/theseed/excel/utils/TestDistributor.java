@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.theseed.utils.ParseFailureException;
+import org.theseed.basic.ParseFailureException;
 
 /**
  *

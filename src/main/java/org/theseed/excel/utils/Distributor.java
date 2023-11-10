@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.theseed.basic.ParseFailureException;
 import org.theseed.excel.CustomWorkbook;
-import org.theseed.utils.ParseFailureException;
 
 /**
  * This object creates a distribution spreadsheet.  The constructor passes in a minimum, a maximum, and a number
