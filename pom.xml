@@ -3,13 +3,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.theseed</groupId>
     <artifactId>excel.utils</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>excel.utils</name>
     <url>http://www.biosyntheticmachines.com</url>
+      <parent>
+        <groupId>org.theseed</groupId>
+        <artifactId>brc.parent</artifactId>
+        <version>1.0.0</version>
+      </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
