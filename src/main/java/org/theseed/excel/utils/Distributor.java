@@ -28,7 +28,7 @@ public class Distributor {
 
     // FIELDS
     /** logging facility */
-    protected static Logger log = LoggerFactory.getLogger(Distributor.class);
+    private static final Logger log = LoggerFactory.getLogger(Distributor.class);
     /** map of series names to bucket arrays */
     private Map<String, int[]> bucketMap;
     /** bucket size */
