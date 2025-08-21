@@ -140,7 +140,7 @@ public class CustomWorkbook implements AutoCloseable {
         /** this will be an array of the required header widths */
         public int[] autoWidths;
         /** drawing helper for comments and graphs */
-        private XSSFDrawing drawHelper;
+        private final XSSFDrawing drawHelper;
 
         /**
          * Create a new worksheet.
@@ -148,7 +148,7 @@ public class CustomWorkbook implements AutoCloseable {
          * @param name		name of the new worksheet
          * @param isTable	TRUE to make this worksheet a table
          */
-        public Sheet(String name, boolean isTable) {
+        protected Sheet(String name, boolean isTable) {
             // Does this sheet already exist?
             XSSFSheet oldSheet = CustomWorkbook.this.workbook.getSheet(name);
             if (oldSheet != null) {
@@ -182,8 +182,6 @@ public class CustomWorkbook implements AutoCloseable {
             this.rowIdx = 1;
             this.maxCols = 0;
             this.tableMode = isTable;
-            // Add the sheet to the open-sheet list.
-            CustomWorkbook.this.openSheets.add(this);
         }
 
         /**
@@ -215,7 +213,7 @@ public class CustomWorkbook implements AutoCloseable {
          * @param max		minimum "high" value
          */
         public void storeCell(double value, double min, double max) {
-            XSSFCell cell = this.addCell(CellType.NUMERIC);
+            XSSFCell cell = this.addCell();
             cell.setCellValue(value);
             if (value <= min)
                 cell.setCellStyle(CustomWorkbook.this.lowStyle);
@@ -237,11 +235,9 @@ public class CustomWorkbook implements AutoCloseable {
         /**
          * Add a new cell to the sheet at the current position.
          *
-         * @param type		type of cell to add
-         *
          * @return the new cell added
          */
-        private XSSFCell addCell(CellType type) {
+        private XSSFCell addCell() {
             XSSFCell retVal = this.row.createCell(this.colIdx);
             this.colIdx++;
             if (this.colIdx > this.maxCols) this.maxCols = this.colIdx;
@@ -255,7 +251,7 @@ public class CustomWorkbook implements AutoCloseable {
          * @param style		style of number
          */
         public void storeCell(double value, Num style) {
-            XSSFCell cell = this.addCell(CellType.NUMERIC);
+            XSSFCell cell = this.addCell();
             this.storeDouble(cell, value, style);
         }
 
@@ -269,15 +265,9 @@ public class CustomWorkbook implements AutoCloseable {
         private void storeDouble(XSSFCell cell, double value, Num style) {
             cell.setCellValue(value);
             switch (style) {
-            case NORMAL :
-                cell.setCellStyle(CustomWorkbook.this.numStyle);
-                break;
-            case FRACTION :
-                cell.setCellStyle(CustomWorkbook.this.fracStyle);
-                break;
-            case ML :
-                cell.setCellStyle(CustomWorkbook.this.mlStyle);
-                break;
+            case NORMAL -> cell.setCellStyle(CustomWorkbook.this.numStyle);
+            case FRACTION -> cell.setCellStyle(CustomWorkbook.this.fracStyle);
+            case ML -> cell.setCellStyle(CustomWorkbook.this.mlStyle);
             }
         }
 
@@ -303,10 +293,10 @@ public class CustomWorkbook implements AutoCloseable {
          * @param c		target column index
          */
         private XSSFCell findCell(int r, int c) {
-            var row = this.sheet.getRow(r);
-            if (row == null)
-                row = this.sheet.createRow(r);
-            return row.createCell(c);
+            var myRow = this.sheet.getRow(r);
+            if (myRow == null)
+                myRow = this.sheet.createRow(r);
+            return myRow.createCell(c);
         }
 
         /**
@@ -328,7 +318,7 @@ public class CustomWorkbook implements AutoCloseable {
          * @param value		value to store
          */
         public void storeCell(int value) {
-            XSSFCell cell = this.addCell(CellType.NUMERIC);
+            XSSFCell cell = this.addCell();
             cell.setCellValue((double) value);
             cell.setCellStyle(CustomWorkbook.this.intStyle);
         }
@@ -341,18 +331,14 @@ public class CustomWorkbook implements AutoCloseable {
          */
         public void storeCell(String value, Text style) {
             if (StringUtils.isBlank(value))
-                this.addCell(CellType.BLANK);
+                this.addCell();
             else {
                 // Here we have real text to store in the cell.
-                XSSFCell cell = this.addCell(CellType.STRING);
+                XSSFCell cell = this.addCell();
                 cell.setCellValue(value);
                 switch (style) {
-                case NORMAL :
-                    cell.setCellStyle(CustomWorkbook.this.textStyle);
-                    break;
-                case FLAG :
-                    cell.setCellStyle(CustomWorkbook.this.flagStyle);
-                    break;
+                case NORMAL -> cell.setCellStyle(CustomWorkbook.this.textStyle);
+                case FLAG -> cell.setCellStyle(CustomWorkbook.this.flagStyle);
                 }
             }
         }
@@ -366,10 +352,10 @@ public class CustomWorkbook implements AutoCloseable {
          */
         public void storeCell(String value, String url, String comment) {
             if (StringUtils.isBlank(value))
-                this.addCell(CellType.BLANK);
+                this.addCell();
             else {
                 // Here we have real text to put in the cell.
-                XSSFCell cell = this.addCell(CellType.STRING);
+                XSSFCell cell = this.addCell();
                 cell.setCellValue(value);
                 // Process the link and comment.
                 this.decorate(cell, url, comment);
@@ -412,7 +398,7 @@ public class CustomWorkbook implements AutoCloseable {
          * Store an empty cell in the current position.
          */
         public void storeBlankCell() {
-            this.addCell(CellType.BLANK);
+            this.addCell();
         }
 
         /**
@@ -423,7 +409,7 @@ public class CustomWorkbook implements AutoCloseable {
          * @param comment	comment text (or NULL if no comment)
          */
         public void storeCell(int value, String url, String comment) {
-            XSSFCell cell = this.addCell(CellType.NUMERIC);
+            XSSFCell cell = this.addCell();
             cell.setCellValue((double) value);
             this.decorate(cell, url, comment);
         }
@@ -619,9 +605,9 @@ public class CustomWorkbook implements AutoCloseable {
         this.maxWidth = Integer.MAX_VALUE;
         // Denote we have no worksheet.
         this.defaultSheet = null;
-        this.openSheets = new ArrayList<Sheet>();
+        this.openSheets = new ArrayList<>();
         // Denote we have no worksheets to delete or dead tables.
-        this.deleteQueue = new ArrayList<XSSFSheet>();
+        this.deleteQueue = new ArrayList<>();
         this.deadTables = 0;
         // Set up the creation helper and the formatter.
         this.helper = this.workbook.getCreationHelper();
@@ -703,6 +689,7 @@ public class CustomWorkbook implements AutoCloseable {
         if (this.defaultSheet != null)
             this.closeSheet();
         this.defaultSheet = this.new Sheet(name, isTable);
+        this.openSheets.add(this.defaultSheet);
     }
 
     /**

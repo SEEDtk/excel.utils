@@ -34,7 +34,7 @@ public class Distributor {
     /** bucket size */
     private double bucketWidth;
     /** size of each bucket array */
-    private int nBuckets;
+    private final int nBuckets;
     /** minimum value */
     private double minimum;
     /** recommended display precision for floating-point */
@@ -58,7 +58,7 @@ public class Distributor {
         this.minimum = min;
         this.bucketWidth = (max - min) / n;
         // We use a tree map so that the series names are sorted, and because we expect the series count to be small.
-        this.bucketMap = new TreeMap<String, int[]>();
+        this.bucketMap = new TreeMap<>();
         // Compute the recommended format.
         int digits = (int) Math.ceil(Math.log10(Math.abs(max))) + 1;
         int divisor = (int) Math.ceil(Math.log10(Math.abs(n))) + 1;
@@ -128,7 +128,7 @@ public class Distributor {
             var names = this.bucketMap.keySet();
             var bucketList = names.stream().map(x -> this.bucketMap.get(x)).collect(Collectors.toList());
             // Create the header list.
-            List<String> headers = new ArrayList<String>(nBuckets + 1);
+            List<String> headers = new ArrayList<>(nBuckets + 1);
             headers.add("bucket_min");
             headers.addAll(names);
             workbook.setHeaders(headers);

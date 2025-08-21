@@ -27,15 +27,10 @@ public class ExcelUtils {
         String retVal = "";
         if (cell != null) {
             switch (cell.getCellType()) {
-            case STRING :
-            case FORMULA :
-                retVal = StringUtils.trim(cell.getStringCellValue());
-                break;
-            case NUMERIC :
-                retVal = Double.toString(cell.getNumericCellValue());
-                break;
-            default:
-                break;
+            case STRING, FORMULA -> retVal = StringUtils.trim(cell.getStringCellValue());
+            case NUMERIC -> retVal = Double.toString(cell.getNumericCellValue());
+            default -> {
+                }
             }
         }
         return retVal;
@@ -50,12 +45,9 @@ public class ExcelUtils {
         double retVal = Double.NaN;
         if (cell != null) {
             switch (cell.getCellType()) {
-            case NUMERIC :
-            case FORMULA :
-                retVal = cell.getNumericCellValue();
-                break;
-            default:
-                break;
+            case NUMERIC, FORMULA -> retVal = cell.getNumericCellValue();
+            default -> {
+                }
             }
         }
         return retVal;
