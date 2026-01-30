@@ -4,6 +4,7 @@
 package org.theseed.excel;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.theseed.magic.MagicObject;
 
 /**
@@ -20,7 +21,7 @@ public class TableName extends MagicObject {
     /** serialization object version */
     private static final long serialVersionUID = -3472320204994842091L;
     /** table ID number */
-    private long tableNum;
+    private final long tableNum;
 
     /**
      * Create a blank, empty table name object.
@@ -56,7 +57,7 @@ public class TableName extends MagicObject {
             retVal = "_";
         else {
             retVal = input.replaceAll("[\\W_]+", "_").toLowerCase();
-            retVal = StringUtils.removeEnd(retVal, "_sheet");
+            retVal = Strings.CS.removeEnd(retVal, "_sheet");
         }
         return retVal;
     }
